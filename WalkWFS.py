@@ -38,6 +38,7 @@ def main():
             wfs = arg
         elif opt in ("-f"):
             feature = arg
+            table = arg
         elif opt in ("-t"):
             table = arg
         elif opt in ("-x"):
