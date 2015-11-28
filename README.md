@@ -3,6 +3,6 @@ Python script to download an area with multiple WFS requests and store it in a P
 
 Depends on
 
-PostgreSQL / PostGIS
-psycopg2
-ogr2ogr from GDAL tools
+* PostgreSQL / PostGIS
+* psycopg2
+* ogr2ogr from GDAL tools
