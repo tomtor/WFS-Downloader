@@ -87,7 +87,7 @@ def main():
                         f.close()
 
                     subprocess.call(["ogr2ogr", "-append", "-skipfailures", "-progress", "-f", "PostgreSQL",
-                        "PG:dbname='eenopeen' host='localhost' port='5432' user='postgres' password='try'",
+                        "PG:dbname='" + pgdbname + "' host='" + pghost + "' port='" + str(pgport) + "' user='" + pguser +"' password='" + pgpassword + "'",
                         tf, "-nln", table])
                     break
                 except:
