@@ -20,6 +20,8 @@ def main():
     feature= 'verblijfsobject'
     table=   'woning'
 
+    srs=     'EPSG:28992'
+
     xmin= 135000
     xmax= 136000
     ymin= 455000
@@ -27,7 +29,7 @@ def main():
     step= 500
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:],"w:f:t:x:X:y:Y:s:d:h:P:u:p:")
+        opts, args = getopt.getopt(sys.argv[1:],"w:f:t:x:X:y:Y:s:d:h:P:u:p:S:")
     except getopt.GetoptError:
         print('WalkWFS.py unknown argument')
         sys.exit(2)
@@ -48,6 +50,8 @@ def main():
             ymax = int(arg)
         elif opt in ("-s"):
             step = int(arg)
+        elif opt in ("-S"):
+            srs = arg
         elif opt in ("-d"):
             pgdbname = arg
         elif opt in ("-h"):
@@ -87,7 +91,7 @@ def main():
 
                     subprocess.call(["ogr2ogr", "-append", "-skipfailures", "-progress", "-f", "PostgreSQL",
                         "PG:dbname='" + pgdbname + "' host='" + pghost + "' port='" + str(pgport) + "' user='" + pguser +"' password='" + pgpassword + "'",
-                        tf, "-nln", table])
+                        "-t_srs", srs, tf, "-nln", table])
                     break
                 except:
                     print("Unexpected error:", sys.exc_info()[0])
