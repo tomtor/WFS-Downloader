@@ -40,15 +40,15 @@ def main():
         elif opt in ("-t"):
             table = arg
         elif opt in ("-x"):
-            xmin = float(arg)
+            xmin = int(arg)
         elif opt in ("-X"):
-            xmax = float(arg)
+            xmax = int(arg)
         elif opt in ("-y"):
-            ymin = float(arg)
+            ymin = int(arg)
         elif opt in ("-Y"):
-            ymax = float(arg)
+            ymax = int(arg)
         elif opt in ("-s"):
-            step = float(arg)
+            step = int(arg)
         elif opt in ("-d"):
             pgdbname = arg
         elif opt in ("-h"):
