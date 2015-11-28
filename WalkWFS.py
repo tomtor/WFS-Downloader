@@ -5,7 +5,6 @@ import subprocess
 import psycopg2
 import time
 
-from collections import Counter
 from urllib.request import urlopen
 
 def main():
