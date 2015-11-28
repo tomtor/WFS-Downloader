@@ -10,6 +10,12 @@ from urllib.request import urlopen
 
 def main():
     
+    pgdbname =  'wfs'
+    pghost=     'localhost'
+    pgport=     5432
+    pguser=     'postgres'
+    pgpassword= 'abc'
+
     host=    'geodata.nationaalgeoregister.nl'
     wfs=     'bag'
     feature= 'verblijfsobject'
@@ -22,9 +28,9 @@ def main():
     step= 500
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:],"w:f:t:x:X:y:Y:s:")
+        opts, args = getopt.getopt(sys.argv[1:],"w:f:t:x:X:y:Y:s:d:h:P:u:p:")
     except getopt.GetoptError:
-        print('WalkWFS.py -w <> -f <> -t <> -x <> -X <> -y <> -Y <> -s <>')
+        print('WalkWFS.py unknown argument')
         sys.exit(2)
     for opt, arg in opts:
         if opt in ("-w"):
@@ -34,22 +40,32 @@ def main():
         elif opt in ("-t"):
             table = arg
         elif opt in ("-x"):
-            xmin = int(arg)
+            xmin = float(arg)
         elif opt in ("-X"):
-            xmax = int(arg)
+            xmax = float(arg)
         elif opt in ("-y"):
-            ymin = int(arg)
+            ymin = float(arg)
         elif opt in ("-Y"):
-            ymax = int(arg)
+            ymax = float(arg)
         elif opt in ("-s"):
-            step = int(arg)
+            step = float(arg)
+        elif opt in ("-d"):
+            pgdbname = arg
+        elif opt in ("-h"):
+            pghost = arg
+        elif opt in ("-P"):
+            pgport = int(arg)
+        elif opt in ("-u"):
+            pguser = arg
+        elif opt in ("-p"):
+            pgpassword = arg
         else:
             assert False, "unknown option"
 
     print(wfs, feature, table, xmin, xmax, ymin, ymax, step)
    
     #DB connection properties
-    conn = psycopg2.connect(dbname = 'wfs', host= 'localhost', port= 5432, user = 'postgres', password= 'abc')
+    conn = psycopg2.connect(dbname = pgdbname, host= pghost, port= pgport, user = pguser, password= pgpassword)
     cur = conn.cursor()
 
     tf = 'temp-' + table + '.gml'
@@ -60,7 +76,7 @@ def main():
             q= 'http://' + host + '/' + wfs + '/wfs?&REQUEST=GetFeature&SERVICE=WFS&VERSION=1.1.0&TYPENAME=' + feature + '&BBOX=' \
                 + str(x) + ',' + str(y) + ',' + str(x+step) + ',' + str(y+step) + '&SRSNAME=EPSG:28992&OUTPUTFORMAT=text%2Fxml%3B%20subtype%3Dgml%2F3.1.1'
             print(x, y, end=' ')
-            for i in range(0,3): # retry loop
+            for retry in range(1,5): # retry loop
                 try:
                     with urlopen(q) as r:
                             d= r.read()
@@ -76,9 +92,9 @@ def main():
                     break
                 except:
                     print("Unexpected error:", sys.exc_info()[0])
-                    print("Retry: ", str(i+1))
+                    print("Retry: ", str(retry))
                     os.remove(tf)
-                    time.sleep(30)
+                    time.sleep(3 * retry * retry)
                     
     # Remove duplicates
     cur.execute("DELETE FROM " + table + " USING " + table + " t2 " + \
