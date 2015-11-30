@@ -97,7 +97,10 @@ def main():
                 except:
                     print("Unexpected error:", sys.exc_info()[0])
                     print("Retry: ", str(retry))
-                    os.remove(tf)
+                    try:
+                        os.remove(tf)
+                    except:
+                        print('') # ignore
                     time.sleep(3 * retry * retry)
                     
     # Remove duplicates
