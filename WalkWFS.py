@@ -4,6 +4,7 @@ import sys, getopt, os
 import subprocess
 import psycopg2
 import time
+import uuid
 
 from urllib.request import urlopen
 
@@ -72,7 +73,7 @@ def main():
     conn = psycopg2.connect(dbname = pgdbname, host= pghost, port= pgport, user = pguser, password= pgpassword)
     cur = conn.cursor()
 
-    tf = 'temp-' + table + '.gml'
+    tf = table + '-' + str(uuid.uuid4()) + '.gml'
 
     for x in range(xmin, xmax, step):
         for y in range(ymin, ymax, step):
@@ -97,10 +98,6 @@ def main():
                 except:
                     print("Unexpected error:", sys.exc_info()[0])
                     print("Retry: ", str(retry))
-                    try:
-                        os.remove(tf)
-                    except:
-                        print('') # ignore
                     time.sleep(3 * retry * retry)
                     
     # Remove duplicates
@@ -109,6 +106,7 @@ def main():
                 + table + ".ogc_fid < t2.ogc_fid;")
     conn.commit()
     conn.close()
+    os.remove(tf)
 
 if __name__ == "__main__":
     main()
